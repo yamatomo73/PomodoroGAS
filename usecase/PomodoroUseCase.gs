@@ -3,7 +3,7 @@
     
     /**
     * ポモドーロのユースケースクラス
-    * @param {StateHistoryRepository} StateHistoryRepository のインスタンス
+    * @param {StateHistoryRepository} stateHistoryRepositoryStateHistoryRepository のインスタンス
     */
     function PomodoroUseCase(stateHistoryRepository)
     {
@@ -25,15 +25,24 @@
     };
 
     /*
-    * 次の状態を開始する
-    * @return {State} ステータス
+    * 次の状態に遷移可能か
+    * @return {boolean} 
     */
-    PomodoroUseCase.prototype.start = function() {
+    PomodoroUseCase.prototype.canTransit = function() {
       var state = this.state();
-      if (!state.isExpire()) {
+      return state.isExpire();
+    };
+
+    /*
+    * 次の状態を開始する
+    * @return {State} 遷移後の状態
+    */
+    PomodoroUseCase.prototype.transit = function() {
+      if (!this.canTransit()) {
         throw new Error('まだ次にはいけません');
       }
       
+      var state = this.state();
       return this.stateHistoryRepository.store(state.nextState());
     };
     
