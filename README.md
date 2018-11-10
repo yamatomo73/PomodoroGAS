@@ -1,6 +1,6 @@
 # PomodoroGAS
 
-簡易ポモドーロタイマーの Google Apps Script です。
+簡易ポモドーロタイマーの Google Apps Script です。  
 データストアにスプレッドシートを使っていますのでコンテナバインドスクリプトで動かしてください。
 
 # 使い方
