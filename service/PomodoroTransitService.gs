@@ -4,9 +4,10 @@
     /*
     * ステータスサービス
     */
-    function PomodoroTransitService(stateHistoryRepository)
+    function PomodoroTransitService(stateHistoryRepository, client)
     {
       this.stateHistoryRepository = stateHistoryRepository;
+      this.client = client;
     };
     
     PomodoroTransitService.prototype.transit = function() {
@@ -14,7 +15,17 @@
       if (!use_case.canTransit()) {
         return false;
       }
-      return use_case.transit();
+      
+      var state = use_case.transit();
+      
+      // chatwork 連携
+      if (this.client) {
+        var cw_user_use_case = new ChatworkUserUseCase(this.client);
+        var me_data = cw_user_use_case.updateStatus(state);
+        Logger.log(me_data);
+      }
+      
+      return state;
     };
     
     PomodoroTransitService.toString = function() {

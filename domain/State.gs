@@ -54,12 +54,24 @@
     }
     
     /*
+    * 残り時間
+    */
+    State.prototype.remainingTime = function() {
+      var term = this.state_type.getTerm();
+      if (null === term) {
+        // 期限がない状態
+        return false;
+      }
+      return new RemainingTime(this.elapsedTime(), term);
+    }
+    
+    /*
     * 経過時間
     */
     State.prototype.elapsedTime = function() {
-      return new ElapsedTime(new Date().getTime() - this.start_date.getTime());
+      return new ElapsedTime(this.start_date);
     }
-    
+
     State.prototype.getId = function() {
       return this.id;
     };
