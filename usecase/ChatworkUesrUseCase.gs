@@ -2,13 +2,14 @@
   var ChatworkUserUseCase = (function() {
     /**
     * ポモドーロのchatwork連携のユースケースクラス
-    * @param {ChatWorkClientEx} client ChatWorkClientExのインスタンス
+    * @param {ChatWorkClientEx} notifier_client ChatWorkClientExのインスタンス
     */
-    function ChatworkUserUseCase(client, notification_room_id)
+    function ChatworkUserUseCase(notifier_client, notification_room_id, pomodoro_user_client)
     {
       // this.client =  ChatWorkClientEx.factory({});
-      this.client = client;
+      this.notifier_client = notifier_client;
       this.notification_room_id = notification_room_id;
+      this.pomodoro_user_client = pomodoro_user_client;
     };
     
     /*
@@ -17,7 +18,7 @@
     * @return {object} /me レスポンス (http://developer.chatwork.com/ja/endpoint_me.html)
     */
     ChatworkUserUseCase.prototype.updateStatus = function(state) {
-      var me_data = this.client.getMe();
+      var me_data = this.pomodoro_user_client.getMe();
       var profile_name_prefix = '✨集中時間✨ ';
       if (state) {
         switch(state.getStateType().getName()) {
@@ -25,46 +26,50 @@
             break;
           case StateType.ONGOING.getName():
             // 名前変更
-            this.client.sendProfileSetting(
+            this.pomodoro_user_client.sendProfileSetting(
               {
                 'name':  profile_name_prefix + me_data.name,
               }
             );
+            /*
             // 通知を切る
-            this.client.sendSetting(
+            this.pomodoro_user_client.sendSetting(
               { 
                 'desktop_alert': '0'
               }
             );
+            */
             break;
           case StateType.SHORT_BREAK.getName():
             // 名前を元に戻す
-            this.client.sendProfileSetting(
+            this.pomodoro_user_client.sendProfileSetting(
               {
                 'name': me_data.name.replace(profile_name_prefix, ''),
               }
             );
+            /*
             // 通知をONにする
-            this.client.sendSetting(
+            this.pomodoro_user_client.sendSetting(
               { 
                 'desktop_alert': '1'
               }
             );
+            */
             break;
         }
       }
-      return this.client.getMe();
+      return this.pomodoro_user_client.getMe();
     };
     
     ChatworkUserUseCase.prototype.checkStatus = function(state) {
       var over_time = state.overTime();
       if (over_time.toMinute() === 1) {
-        var me_data = this.client.getMe();
-        this.client.sendMessage(
+        var pomodoro_user_data = this.pomodoro_user_client.getMe();
+        this.notifier_client.sendMessage(
           {
             'self_unread': 1,
             'room_id': this.notification_room_id,
-            'body': Utilities.formatString('[To:%s] %s 終了しました', me_data.account_id, state.getStateType().getName()),
+            'body': Utilities.formatString('[To:%s] %s 終了しました', pomodoro_user_data.account_id, state.getStateType().getName()),
           }
         );
       }
