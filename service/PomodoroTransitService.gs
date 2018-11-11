@@ -4,10 +4,11 @@
     /*
     * ステータスサービス
     */
-    function PomodoroTransitService(stateHistoryRepository, client)
+    function PomodoroTransitService(stateHistoryRepository, client, notification_room_id)
     {
       this.stateHistoryRepository = stateHistoryRepository;
       this.client = client;
+      this.notification_room_id = notification_room_id;
     };
     
     PomodoroTransitService.prototype.transit = function() {
@@ -20,7 +21,7 @@
       
       // chatwork 連携
       if (this.client) {
-        var cw_user_use_case = new ChatworkUserUseCase(this.client);
+        var cw_user_use_case = new ChatworkUserUseCase(this.client, this.notification_room_id);
         var me_data = cw_user_use_case.updateStatus(state);
         Logger.log(me_data);
       }

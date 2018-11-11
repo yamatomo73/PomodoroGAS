@@ -4,10 +4,11 @@
     * ポモドーロのchatwork連携のユースケースクラス
     * @param {ChatWorkClientEx} client ChatWorkClientExのインスタンス
     */
-    function ChatworkUserUseCase(client)
+    function ChatworkUserUseCase(client, notification_room_id)
     {
       // this.client =  ChatWorkClientEx.factory({});
       this.client = client;
+      this.notification_room_id = notification_room_id;
     };
     
     /*
@@ -53,6 +54,20 @@
         }
       }
       return this.client.getMe();
+    };
+    
+    ChatworkUserUseCase.prototype.checkStatus = function(state) {
+      var over_time = state.overTime();
+      if (over_time.toMinute() === 1) {
+        var me_data = this.client.getMe();
+        this.client.sendMessage(
+          {
+            'self_unread': 1,
+            'room_id': this.notification_room_id,
+            'body': Utilities.formatString('[To:%s] %s 終了しました', me_data.account_id, state.getStateType().getName()),
+          }
+        );
+      }
     };
     
     ChatworkUserUseCase.toString = function() {

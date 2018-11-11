@@ -15,7 +15,8 @@
       var chatwork_api_token = PropertiesService.getScriptProperties().getProperty('CW_API_TOKEN');
       var chatwork_email = PropertiesService.getScriptProperties().getProperty('CW_LOGIN_EMAIL');
       var chatwork_password = PropertiesService.getScriptProperties().getProperty('CW_LOGIN_PASS');
-      if (chatwork_api_token && chatwork_email && chatwork_password) {
+      this.notification_room_id = PropertiesService.getScriptProperties().getProperty('NOTIFICATION_ROOM_ID');
+      if (chatwork_api_token && chatwork_email && chatwork_password && this.notification_room_id) {
         this.client = new ChatWorkClientEx.factory({
           'token': chatwork_api_token,
           'email': chatwork_email,
@@ -25,11 +26,11 @@
     };
     
     ServiceFactory.prototype.createStatusService = function() {
-      return new PomodoroStatusService(this.stateHistoryRepository);
+      return new PomodoroStatusService(this.stateHistoryRepository, this.client, this.notification_room_id);
     };
     
     ServiceFactory.prototype.createTransitService = function() {
-      return new PomodoroTransitService(this.stateHistoryRepository, this.client);
+      return new PomodoroTransitService(this.stateHistoryRepository, this.client, this.notification_room_id);
     };
 
     ServiceFactory.toString = function() {
