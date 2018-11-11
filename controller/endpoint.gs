@@ -29,7 +29,12 @@ function _outputStatusHtml(title) {
   var html = HtmlService.createTemplateFromFile('template/status'); 
   html.title = title;
   html.status_name = state.getStateType().getName();
-  html.remain = state.remainingTime().toMinute();
+  var remaining_time = state.remainingTime();
+  if (remaining_time) {
+    html.remain = state.remainingTime().toMinute();
+  } else {
+    html.remain = 'なし';
+  }
   output = html.evaluate();
   
   Logger.log(output.getContent());
