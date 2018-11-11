@@ -72,6 +72,13 @@
       return new ElapsedTime(this.start_date);
     }
 
+    /*
+    * 超過時間
+    */
+    State.prototype.overTime = function() {
+      return new OverTime(this.elapsedTime(), this.state_type.getTerm());
+    }
+
     State.prototype.getId = function() {
       return this.id;
     };

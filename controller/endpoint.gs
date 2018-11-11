@@ -35,6 +35,7 @@ function _outputStatusHtml(title) {
   } else {
     html.remain = 'なし';
   }
+  html.over = state.overTime().toMinute();
   output = html.evaluate();
   
   Logger.log(output.getContent());
