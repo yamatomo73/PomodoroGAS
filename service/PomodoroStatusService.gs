@@ -14,17 +14,24 @@
     
     PomodoroStatusService.prototype.status = function() {
       var use_case = new PomodoroUseCase(this.stateHistoryRepository);
-      var state = use_case.state();
-
+      return use_case.state();
+    };
+    
+    PomodoroStatusService.prototype.observe = function() {
+      var use_case = new PomodoroUseCase(this.stateHistoryRepository);
+      
       // chatwork 連携
       if (this.notifier_client && this.notification_room_id && this.pomodoro_user_client) {
-        var cw_user_use_case = new ChatworkUserUseCase(this.notifier_client, this.notification_room_id, this.pomodoro_user_client);
-        cw_user_use_case.checkStatus(state);
+        var state = use_case.state();
+        var cw_user_use_case = new ChatworkUserUseCase(this.stateHistoryRepository, this.notifier_client, this.notification_room_id, this.pomodoro_user_client);
+        if (state.shouldFinishNotify()) {
+          cw_user_use_case.finishNotiry(state);
+        }
       }
       
       return use_case.state();
     };
-    
+
     PomodoroStatusService.toString = function() {
       return 'PomodoroStatusService';
     };

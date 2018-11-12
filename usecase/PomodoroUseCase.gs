@@ -19,7 +19,7 @@
       if (null === state) {
         // まだ一度もしていない
         // 準備OKを記録
-        return this.stateHistoryRepository.store(new State(null, StateType.READY, new Date()));
+        return this.stateHistoryRepository.store(new State(null, StateType.READY, new Date(), false, false));
       }
       return state;
     };

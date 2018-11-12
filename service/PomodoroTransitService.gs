@@ -19,12 +19,10 @@
       }
       
       var state = use_case.transit();
-      
       // chatwork 連携
       if (this.notifier_client && this.notification_room_id && this.pomodoro_user_client) {
-        var cw_user_use_case = new ChatworkUserUseCase(this.notifier_client, this.notification_room_id, this.pomodoro_user_client);
+        var cw_user_use_case = new ChatworkUserUseCase(this.stateHistoryRepository, this.notifier_client, this.notification_room_id, this.pomodoro_user_client);
         var me_data = cw_user_use_case.updateStatus(state);
-        Logger.log(me_data);
       }
       
       return state;

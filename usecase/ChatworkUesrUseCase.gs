@@ -4,8 +4,9 @@
     * ポモドーロのchatwork連携のユースケースクラス
     * @param {ChatWorkClientEx} notifier_client ChatWorkClientExのインスタンス
     */
-    function ChatworkUserUseCase(notifier_client, notification_room_id, pomodoro_user_client)
+    function ChatworkUserUseCase(stateHistoryRepository, notifier_client, notification_room_id, pomodoro_user_client)
     {
+      this.stateHistoryRepository = stateHistoryRepository;
       // this.client =  ChatWorkClientEx.factory({});
       this.notifier_client = notifier_client;
       this.notification_room_id = notification_room_id;
@@ -61,18 +62,18 @@
       return this.pomodoro_user_client.getMe();
     };
     
-    ChatworkUserUseCase.prototype.checkStatus = function(state) {
+    ChatworkUserUseCase.prototype.finishNotiry = function(state) {
       var over_time = state.overTime();
-      if (over_time.toMinute() === 1) {
-        var pomodoro_user_data = this.pomodoro_user_client.getMe();
-        this.notifier_client.sendMessage(
-          {
-            'self_unread': 1,
-            'room_id': this.notification_room_id,
-            'body': Utilities.formatString('[To:%s] %s 終了しました', pomodoro_user_data.account_id, state.getStateType().getName()),
-          }
-        );
-      }
+      var pomodoro_user_data = this.pomodoro_user_client.getMe();
+      this.notifier_client.sendMessage(
+        {
+          'self_unread': 1,
+          'room_id': this.notification_room_id,
+          'body': Utilities.formatString('[To:%s] %s 終了しました', pomodoro_user_data.account_id, state.getStateType().getName()),
+        }
+      );
+      // 通知済みにする
+      this.stateHistoryRepository.store(state.finishNotify());
     };
     
     ChatworkUserUseCase.toString = function() {

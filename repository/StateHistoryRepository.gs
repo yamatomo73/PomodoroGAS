@@ -26,12 +26,12 @@
     StateHistoryRepository.prototype.store = function(state) {
       if (state.getId() === null) {
         // insert
-        this.sheet.appendRow([state.getStartDate(), state.getStateType().getName()]);
-        return new State(this.sheet.getLastRow(), state.getStateType(), state.getStartDate());
+        this.sheet.appendRow([state.getStartDate(), state.getStateType().getName(), state.isStartNotified(), state.isFinishNotified()]);
+        return new State(this.sheet.getLastRow(), state.getStateType(), state.getStartDate(), state.isStartNotified(), state.isFinishNotified());
       }
       // update
       var range = this._getRecordRange(state.getId());
-      range.setValues([[state.getStartDate(), state.getStateType().getName()]]);
+      range.setValues([[state.getStartDate(), state.getStateType().getName(), state.isStartNotified(), state.isFinishNotified()]]);
       return state;
     };
     
@@ -39,13 +39,15 @@
       return new State(
         id,
         StateType.valueOf(record[1]),
-        new Date(record[0])
+        new Date(record[0]),
+        record[2],
+        record[3]
       );
     };
     
     StateHistoryRepository.prototype._getRecordRange = function(row) {
-      // 指定の行の1行、A列からの2列を取得
-      return this.sheet.getRange(row, 1, 1, 2);
+      // 指定の行の1行、A列からの4列を取得
+      return this.sheet.getRange(row, 1, 1, 4);
     };
 
     StateHistoryRepository.toString = function() {
