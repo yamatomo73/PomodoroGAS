@@ -18,7 +18,7 @@
     * @param {State} state
     * @return {object} /me レスポンス (http://developer.chatwork.com/ja/endpoint_me.html)
     */
-    ChatworkUserUseCase.prototype.updateStatus = function(state) {
+    ChatworkUserUseCase.prototype.changeStatus = function(state) {
       var me_data = this.pomodoro_user_client.getMe();
       var profile_name_prefix = '✨集中時間✨ ';
       if (state) {
